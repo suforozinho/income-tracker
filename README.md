@@ -4,7 +4,7 @@ Invoices in dollars and euros, income in reais. A small full-stack app for a Bra
 (PJ) who bills foreign clients: create English PDF invoices, record when each payment actually
 lands, and watch monthly and yearly income against a revenue ceiling.
 
-**Demo:** _add the Vercel URL here_ · click **Try the demo**, no sign-up needed.
+**Demo:** [income-tracker-demo.vercel.app](https://income-tracker-demo.vercel.app/) · click **Try the demo**, no sign-up needed.
 
 ![Dashboard with a year of invented income, the revenue-ceiling warning and reminders](docs/dashboard.png)
 
