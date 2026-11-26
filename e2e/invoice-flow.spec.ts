@@ -11,6 +11,7 @@ test("create a client and an invoice, download the PDF, record a payment, see th
   // A new client.
   await page.getByRole("link", { name: "Clients" }).click();
   await page.getByRole("link", { name: "Add client" }).click();
+  await expect(page.getByRole("heading", { name: "New client" })).toBeVisible();
   await page.getByLabel("Name").fill("Playwright Testing Co.");
   await page.getByLabel("Country").fill("Portugal");
   await page.getByLabel("Currency").selectOption("EUR");
@@ -19,8 +20,12 @@ test("create a client and an invoice, download the PDF, record a payment, see th
   await expect(page.getByRole("link", { name: "Playwright Testing Co." })).toBeVisible();
 
   // An invoice with three items and a live total.
+  // Wait for each page to arrive before using its form: the invoice list has its own
+  // "Client" filter, and on a slow runner selectOption could hit that one instead.
   await page.getByRole("link", { name: "Invoices", exact: true }).click();
+  await expect(page.getByRole("heading", { name: "Invoices", level: 1 })).toBeVisible();
   await page.getByRole("link", { name: "New invoice" }).click();
+  await expect(page.getByRole("heading", { name: "New invoice", level: 1 })).toBeVisible();
   await page.getByLabel("Client").selectOption({ label: "Playwright Testing Co." });
   await expect(page.getByLabel("Currency")).toHaveValue("EUR");
 
@@ -63,6 +68,7 @@ test("create a client and an invoice, download the PDF, record a payment, see th
     route.fulfill({ status: 503, json: { error: "Banco Central is unreachable" } }),
   );
   await page.getByRole("link", { name: "Record payment" }).click();
+  await expect(page.getByRole("heading", { name: /Record payment for/ })).toBeVisible();
   await expect(page.getByText(/Couldn't get the PTAX rate/)).toBeVisible();
   await expect(page.getByLabel("Enter a rate by hand")).toBeChecked();
   await page.getByLabel("Rate (BRL per EUR)").fill("6.1000");
@@ -77,6 +83,7 @@ test("create a client and an invoice, download the PDF, record a payment, see th
 
   // The dashboard total moved by exactly the reais typed.
   await page.getByRole("link", { name: "Dashboard" }).click();
+  await expect(page.getByRole("heading", { name: "Dashboard", level: 1 })).toBeVisible();
   const ytdAfter = centsFrom(await page.getByTestId("ytd-total").innerText());
   expect(ytdAfter - ytdBefore).toBe(680_000);
   // The demo starts above 80% of its ceiling; this payment takes it past 100%.
@@ -102,6 +109,7 @@ test("a weekend payment date uses the previous business day's PTAX rate and says
   await page.goto("/invoices?status=sent");
   await page.getByRole("row").nth(1).getByRole("link").click();
   await page.getByRole("link", { name: "Record payment" }).click();
+  await expect(page.getByRole("heading", { name: /Record payment for/ })).toBeVisible();
   await page.getByLabel("Date the money arrived").fill("2026-11-21");
   await expect(page.getByText(/There is no bulletin on Nov 21, 2026/)).toBeVisible();
   await expect(page.getByText(/bulletin of Nov 19, 2026/)).toBeVisible();
