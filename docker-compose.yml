@@ -1,0 +1,17 @@
+# Local Postgres for development and integration tests.
+# Port 5433 so it can run next to other projects that use 5432.
+services:
+  db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: income
+    ports:
+      - "5433:5432"
+    volumes:
+      - income-db:/var/lib/postgresql/data
+      - ./scripts/create-test-db.sql:/docker-entrypoint-initdb.d/create-test-db.sql:ro
+
+volumes:
+  income-db:
